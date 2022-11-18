@@ -1,52 +1,30 @@
 package com.example.myjwt.controllers;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpHeaders;
 
-import com.example.myjwt.beans.AsgnmtAssociate;
 import com.example.myjwt.beans.BillablePlanData;
-import com.example.myjwt.beans.BillableReport;
 import com.example.myjwt.beans.Mapping;
 import com.example.myjwt.exception.BadRequestException;
-import com.example.myjwt.exception.ResourceNotFoundException;
-
 import com.example.myjwt.models.AssignmentReport;
 import com.example.myjwt.models.AssignmentUser;
 import com.example.myjwt.models.BillablePlan;
 import com.example.myjwt.models.Category;
 import com.example.myjwt.models.EvaluationResult;
 import com.example.myjwt.models.EvaluationResultCategory;
-import com.example.myjwt.models.Grade;
 import com.example.myjwt.models.Profile;
-import com.example.myjwt.models.Role;
-import com.example.myjwt.models.User;
-import com.example.myjwt.models.enm.EGrade;
-import com.example.myjwt.models.enm.ERole;
-import com.example.myjwt.payload.IdentityAvailability;
-import com.example.myjwt.payload.PyramidItem;
-import com.example.myjwt.payload.request.CreateAccountRequest;
-import com.example.myjwt.payload.request.CreateSbuRequest;
-import com.example.myjwt.payload.response.ApiResponse;
 import com.example.myjwt.payload.response.BillablePlanHistory;
 import com.example.myjwt.repo.AssignmentReportRepository;
 import com.example.myjwt.repo.AssignmentUserRepository;
@@ -55,14 +33,8 @@ import com.example.myjwt.repo.CategoryRepository;
 import com.example.myjwt.repo.EvaluationResultCategoryRepository;
 import com.example.myjwt.repo.EvaluationResultRepository;
 import com.example.myjwt.repo.ProfileRepository;
-import com.example.myjwt.repo.UserRepository;
-import com.example.myjwt.security.services.RoleService;
 import com.example.myjwt.util.AppConstants;
-import com.example.myjwt.util.PMUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -396,5 +368,4 @@ public class DataController extends BaseController {
 		}
 		return historyOfPlans;
 	}
-
 }

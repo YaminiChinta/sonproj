@@ -1,61 +1,51 @@
-import { useState } from 'react'
+import { useState ,useEffect} from 'react'
 import {Data} from '../../components/Data';
 import * as XLSX from 'xlsx';
 import { useLocation } from 'react-router-dom';
 import "../../css/resignation.css";
+import {apiGetAllResignationEmployee,apiPostUpdateResignationEmployeeStatus,apiResignationGroupValueDropDown} from '../../utils/AppUtils';
 
 const ResignationData = ()  =>{
 
-  const { state } = useLocation();
-  const {query} = state;
-  console.log("stateData,",state);
-  const [excelFile, setExcelFile]=useState(null);
-  const [excelFileError, setExcelFileError]=useState(null);  
  
-  const [excelData, setExcelData]=useState(query);
+  const [excelData, setExcelData]=useState(null);
+  const [resingationCategoryData, setResingationCategoryData]=useState([]);
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
 
-  const handleFile = (e)=>{
-    let selectedFile = e.target.files[0];
-    if(selectedFile){
-      if(selectedFile&&fileType.includes(selectedFile.type)){
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(selectedFile);
-        reader.onload=(e)=>{
-          setExcelFileError(null);
-          setExcelFile(e.target.result);
-        } 
-      }
-      else{
-        setExcelFileError('Please select only excel file types');
-        setExcelFile(null);
-      }
-    }
-    else{
-      console.log('plz select your file');
-    }
-  }
 
-  const handleSubmit=(e)=>{
-    e.preventDefault();
-    if(excelFile!==null){
-      const workbook = XLSX.read(excelFile,{type:'buffer'});
-      const worksheetName = workbook.SheetNames[0];
-      const worksheet=workbook.Sheets[worksheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-      setExcelData(data);
-    }
-    else{
-      setExcelData(null);
-    }
-  }
+useEffect(()=>{
+  apiResignationGroupValueDropDown().then((categories)=>{
+    console.log(categories.data);
+    setResingationCategoryData(categories.data);
+  }).catch((err)=>{
+    alert("Something went wrong :- ",err);
+  })
+  getAllData();  
+},[])
+
+function getAllData(){
+  apiGetAllResignationEmployee().then((data) => {         
+    setExcelData(data);
+  }).catch((err) => {
+    alert("Something went wrong :- ",err);
+  });
+}
+const updateResignationEmployeeStatus = (item) => {
+  apiPostUpdateResignationEmployeeStatus(item).then((element)=>{
+    alert(`${element.employee_Name} resignation status is updated`);
+    getAllData();
+  });
+}
+
   
   return (
     <div className="container">
       <br></br>
-      <label className="formheading">Resignation Employees Details</label>
+      <label className="formheading col-3">Resignation Employees Details</label>
+      <label className='col-8'></label>
+      <label className='col-1'><button className='formheading col-10' style={{border:"none"}}>save</button></label>
       <center><h3></h3></center>
       <div className='viewer'>
       {excelData===null&&<>No file selected
@@ -85,11 +75,12 @@ const ResignationData = ()  =>{
                   <th scope='col'>Resigned On</th>
                   <th scope='col'>Last Working Date</th>
                   <th scope='col'>Resignation Reason</th>   
-                  <th scope='col'>Category</th>               
+                  <th scope='col'>Category</th>         
+                  <th scope='col'>Save</th>      
                 </tr>
               </thead>
               <tbody className='tdcontent'>
-                <Data excelData={excelData}/>
+                <Data excelData={excelData} categories={resingationCategoryData} updateResignationEmployeeStatus={updateResignationEmployeeStatus}/>
               </tbody>
             </table>            
           </div>

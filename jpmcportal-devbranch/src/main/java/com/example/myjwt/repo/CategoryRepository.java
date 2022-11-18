@@ -23,4 +23,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	List<Category> findByCatGroup(String catGroup);
 	List<Category> findByCatGroupAndGroupKey(String catGroup, String groupKey);
 	Category findByCatGroupAndGroupKeyAndGroupValue(String catGroup, String groupKey, String groupValue);
+	
 }

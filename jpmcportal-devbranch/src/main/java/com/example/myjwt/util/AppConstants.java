@@ -16,5 +16,6 @@ public interface AppConstants {
 	String NO_BILLABILITY_PLAN = "None";
 	String CATEGORY_BILLABILITY = "BillabilityPlan";
 
+	String CATEGORY_RESIGNATION = "Resignation";
 	
 }

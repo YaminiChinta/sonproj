@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.myjwt.exception.ResourceNotFoundException;
+import com.example.myjwt.models.Category;
 import com.example.myjwt.models.Grade;
 import com.example.myjwt.models.User;
 import com.example.myjwt.payload.IdentityExists;
@@ -26,11 +28,14 @@ import com.example.myjwt.payload.UserListItem;
 import com.example.myjwt.payload.UserProfile;
 import com.example.myjwt.payload.UserSummary;
 import com.example.myjwt.payload.response.ApiResponse;
+import com.example.myjwt.payload.response.GetGroupValuesResponse;
+import com.example.myjwt.repo.CategoryRepository;
 import com.example.myjwt.repo.GradeRepository;
 import com.example.myjwt.repo.UserRepository;
 import com.example.myjwt.security.CurrentUser;
 import com.example.myjwt.security.services.UserPrincipal;
 import com.example.myjwt.security.services.UserService;
+import com.example.myjwt.util.AppConstants;
 import com.example.myjwt.util.PMUtils;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -44,6 +49,8 @@ public class UserController extends BaseController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@Autowired
 	private GradeRepository gradeRepository;
@@ -314,4 +321,35 @@ public class UserController extends BaseController {
 		return ResponseEntity.created(location).body(new ApiResponse(true, "Grade saved"));
 	}
 
+	// @GetMapping("/dropdown-group-values")
+	// public ResponseEntity<GetGroupValuesResponse> getGroupValuesDropDown(){
+	// 	List<Category> getGroupValues = categoryRepository.findAll();
+ 
+    //     List<String> values = new ArrayList<>();
+    //     for (Category category : getGroupValues) {
+	// 		String getGroupValue = category.getGroupValue();
+	// 		values.add(getGroupValue);
+	// 	}  
+	// 	if(getGroupValues != null){
+	// 		return new ResponseEntity<>(new GetGroupValuesResponse(false, "Successfully fetched the data", values), HttpStatus.OK);
+	// 	}else{
+	// 		return new ResponseEntity<>(new GetGroupValuesResponse(true, "Failed to fetched the data", null), HttpStatus.OK);
+	// 	}
+	// }
+
+	@GetMapping("/dropdown-resignation-group-values")
+	public ResponseEntity<GetGroupValuesResponse> getResignationGroupValuesDropDown(){
+		List<Category> getGroupValues = categoryRepository.findByCatGroup(AppConstants.CATEGORY_RESIGNATION);
+ 
+        List<String> values = new ArrayList<>();
+        for (Category category : getGroupValues) {
+			String getGroupValue = category.getGroupValue();
+			values.add(getGroupValue);
+		}  
+		if(getGroupValues != null){
+			return new ResponseEntity<>(new GetGroupValuesResponse(false, "Successfully fetched the data", values), HttpStatus.OK);
+		}else{
+			return new ResponseEntity<>(new GetGroupValuesResponse(true, "Failed to fetched the data", null), HttpStatus.OK);
+		}
+	}
 }

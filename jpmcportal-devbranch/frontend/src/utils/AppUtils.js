@@ -52,6 +52,22 @@ export function apiGetAssignmentReportNames() {
   });
 }
 
+//Dropdown
+// export function apiGroupValueDropDown() {
+//   return request({
+//     url: API_URL + "/dropdown-group-values",
+//     method: "GET",
+//   });
+// }
+
+//Dropdown
+export function apiResignationGroupValueDropDown() {
+  return request({
+    url: API_URL + "/dropdown-resignation-group-values",
+    method: "GET",
+  });
+}
+
 export function apiGetAllSkillFamily() {
   return request({
     url: API_URL + "/forms/getAllSkillFamilies",
@@ -331,5 +347,28 @@ export function apiGetAllUserLeaves(year,LOB,serviceLine) {
   return request({
     url: API_URL + "/leaves/getAllUserLeaveDetails/"+year+"/"+LOB+"/"+serviceLine,
     method: "GET",
+  });
+}
+
+export function apiGetAllResignationEmployee() {
+  return request({
+    url: API_URL + "/resignation",
+    method: "GET",
+  });
+}
+
+export function apiPostResignationEmployeeListData(data) {
+  return request({
+    url: API_URL + "/upload-resignation-data",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function apiPostUpdateResignationEmployeeStatus(data) {
+  return request({
+    url: API_URL + "/update-resignation-employee-status",
+    method: "POST",
+    body: JSON.stringify(data),
   });
 }

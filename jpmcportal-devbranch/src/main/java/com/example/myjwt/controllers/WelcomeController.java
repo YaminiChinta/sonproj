@@ -1,10 +1,7 @@
 package com.example.myjwt.controllers;
 
 import java.util.Collections;
-import java.util.HashSet;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,10 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myjwt.models.Category;
@@ -32,7 +26,6 @@ import com.example.myjwt.repo.HexCodeRepository;
 import com.example.myjwt.repo.RoleRepository;
 import com.example.myjwt.repo.SkillRepository;
 import com.example.myjwt.repo.UserRepository;
-import com.example.myjwt.security.services.RoleService;
 import com.example.myjwt.security.services.UserService;
 import com.example.myjwt.util.AppConstants;
 import com.example.myjwt.repo.CategoryRepository;
@@ -59,9 +52,6 @@ public class WelcomeController {
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -97,23 +87,23 @@ public class WelcomeController {
 		} else {
 
 			switch (hexCode.getTableName()) {
-			case AppConstants.TBL_USER:
-				switch (hexCode.getAction()) {
-				case AppConstants.HEXCODE_ACTION_VALIDATE:
-					switch (hexCode.getSubAction()) {
-					case AppConstants.HEXCODE_SUBACTION_EMAIL:
+				case AppConstants.TBL_USER:
+					switch (hexCode.getAction()) {
+						case AppConstants.HEXCODE_ACTION_VALIDATE:
+							switch (hexCode.getSubAction()) {
+								case AppConstants.HEXCODE_SUBACTION_EMAIL:
 
-						User user = userRepository.findById(hexCode.getRefId())
-								.orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+									User user = userRepository.findById(hexCode.getRefId())
+											.orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
 
-						// user.setIsVerified(true);
-						updateUserAndDeleteHexCode(user, hexCode);
+									// user.setIsVerified(true);
+									updateUserAndDeleteHexCode(user, hexCode);
 
-						return "verify_success!!!   Login to explore!!!";
+									return "verify_success!!!   Login to explore!!!";
+							}
+							break;
 					}
 					break;
-				}
-				break;
 			}
 
 			return "Could not find relevant authentication !!!";
@@ -135,9 +125,20 @@ public class WelcomeController {
 
 	private void createDefaultCategories() {
 
-		String[] billabilityCategories = { "Billable", "Planned Billable (NBL)", "Planned Billable (Billable)",
+		String[] billabilityCategories = { "Billabled", "Planned Billable (NBL)", "Planned Billable (Billable)",
 				"Training (NBL)", "Training (Billable)", "Planned to Release", "Release Initiated",
 				AppConstants.NO_BILLABILITY_PLAN, "Duplicate Allocation" };
+
+		String[] resignationCategories = { "Compensation", "Promotion", "Role Change",
+				"Education", "Oppurtunities" };
+		for (int i = 0; i < resignationCategories.length; i++) {
+			Category category = new Category();
+			category.setCatGroup(AppConstants.CATEGORY_RESIGNATION);
+			category.setGroupKey(AppConstants.CATEGORY_RESIGNATION);
+			category.setGroupValue(resignationCategories[i]);
+			categoryRepository.save(category);
+			categoryRepository.flush();
+		}
 
 		for (int i = 0; i < billabilityCategories.length; i++) {
 			Category category = new Category();
@@ -147,13 +148,12 @@ public class WelcomeController {
 			categoryRepository.save(category);
 			categoryRepository.flush();
 		}
-
 	}
 
 	private void createDefaultUser() {
 		User user = new User();
 
-//		user.setFullName("admin");
+		// user.setFullName("admin");
 		user.setUserName("admin");
 		user.setEmail("admin@gmail.com");
 		user.setIsActive(true);

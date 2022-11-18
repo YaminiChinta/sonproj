@@ -4,7 +4,8 @@ import {Data} from '../../components/Data';
 import * as XLSX from 'xlsx'
 import { Redirect } from "react-router-dom";
 import { RES_URL } from "../../common/constants";
-
+import moment from 'moment';
+import {apiPostResignationEmployeeListData} from '../../utils/AppUtils';
 
 const ResignationUploadSheet = ()  =>{
     const navigate = useNavigate();
@@ -41,12 +42,28 @@ const ResignationUploadSheet = ()  =>{
     const handleSubmit=(e)=>{
       e.preventDefault();
       if(excelFile!==null){
-        console.log("id");
         const workbook = XLSX.read(excelFile,{type:'buffer', cellDates: true, dateNF: 'mm/dd/yyyy;@'});
         const worksheetName = workbook.SheetNames[0];
         const worksheet=workbook.Sheets[worksheetName];
         const data = XLSX.utils.sheet_to_json(worksheet);
-        navigate(RES_URL + "ResignationData",{ state : { query : data }} );
+        let postListObj = [];
+        for(let i in data){
+          console.log(data[i]);
+          let object =  {
+            "emp_ID":data[i].EmpId,
+            "employee_Name": data[i].EmployeeName,
+            "last_working_date":moment(data[i].LWD).format('YYYY-MM-DD'),
+            "resignation_reason": data[i].ResignationReason,
+            "resignation_status":"PENDING",
+            "resigned_on":moment(data[i].ResignedOn).format('YYYY-MM-DD')
+            };
+            postListObj.push(object);
+        }
+        apiPostResignationEmployeeListData(postListObj).then((d) => {         
+          navigate(RES_URL + "ResignationData",{state:{query:data}});
+        }).catch((err) => {
+          alert("Something went wrong :- ",err);
+        });
       }
       else{
         console.log("else");
@@ -73,22 +90,7 @@ const ResignationUploadSheet = ()  =>{
        </div>
         </div>
       </div>
-    // <div className="container">
-    //   <div className='form'>
-    //     <form className='form-group' autoComplete="off"
-    //     onSubmit={handleSubmit}>
-    //       <label><h5>Upload Resignation Sheet files</h5></label>
-    //       <br></br>
-    //       <input type='file' className='form-control'
-    //       onChange={handleFile} required></input>                  
-    //       {excelFileError&&<div className='text-danger'
-    //       style={{marginTop:5+'px'}}>{excelFileError}</div>}
-    //       <br></br>
-    //       <button type='submit' className='btn btn-success'  
-    //       style={{marginTop:5+'px'}}>Submit</button>
-    //     </form>
-    //   </div>
-    //   </div>
+    
     );
 }
 
